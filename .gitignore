@@ -1,0 +1,19 @@
+# Build caches (FAISS indices), regenerated on first run.
+embeddings/
+adaptive-fallback/embeddings/
+
+# LLM judge response cache (safe to delete/regenerate; keeps re-runs free).
+adaptive-fallback/cache/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# uv
+adaptive-fallback/.venv/
+
+# conda (CodeGuarder's env lives outside the repo, managed by conda itself)
+
+# OS
+.DS_Store

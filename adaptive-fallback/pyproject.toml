@@ -1,0 +1,30 @@
+[project]
+name = "adaptive-fallback"
+version = "0.1.0"
+description = "Adaptive-fallback experiment on top of CodeGuarder (CCS'25): drop a retrieved example when an LLM judge flags it as unsafe relative to the retrieved security knowledge, instead of always keeping it alongside advisory text."
+requires-python = ">=3.10,<3.11"
+dependencies = [
+    "faiss-cpu==1.12.0",
+    "huggingface-hub==0.34.4",
+    "langchain==0.3.27",
+    "langchain-community==0.3.27",
+    "langchain-core==0.3.74",
+    "langchain-text-splitters==0.3.9",
+    "openai==1.58.1",
+    "python-dotenv==1.1.1",
+    "requests==2.32.5",
+    "scikit-learn==1.7.1",
+    "tokenizers==0.21.4",
+    "torch==2.4.0",
+    "transformers==4.47.0",
+    "tqdm",
+]
+
+[tool.uv]
+# Versions pinned to match ../CodeGuarder/environment.yml where the same
+# libraries are used (this project reuses ../CodeGuarder/src's retrieval
+# helpers directly rather than depending on it as a package). Only the
+# dependencies this project's own code actually imports are listed here —
+# CodeGuarder's eval-only deps (codebleu, sacrebleu, semgrep, boto3, ...)
+# stay in CodeGuarder's own conda environment, which is invoked separately
+# by scripts/run_*_adaptive.sh for the generation/evaluation steps.
