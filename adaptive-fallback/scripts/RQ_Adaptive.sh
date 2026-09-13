@@ -44,12 +44,24 @@ trap 'rm -f "${RESULTS_JSON}" "${AVG_TABLE}"' EXIT
 for scenario in ${SCENARIOS}; do
     for arm in ${ARMS}; do
         RESPONSE_PATH="${RESULTS_DIR}/toy_${scenario}_${arm}_${MODEL_NAME}.json"
+        SCORES_PATH="${RESPONSE_PATH%.json}_scores.json"
         if [ ! -f "${RESPONSE_PATH}" ]; then
             echo "Missing ${RESPONSE_PATH}."
             echo "Run scripts/run_${scenario}_adaptive.sh ${MODEL_NAME} <MODEL_KEY> <BASE_URL> first."
             exit 1
         fi
-        ARM_JSON=$(cd "${CODEGUARDER_DIR}" && uv run --python 3.10 python src/sec_eval.py --result_path "${RESPONSE_PATH}" | tail -1)
+        # Reuse the scores saved by scripts/_query_and_score.sh at generation
+        # time rather than recomputing: codebleu has genuine run-to-run
+        # nondeterminism (see that script's comment), so re-scoring here would
+        # silently give slightly different numbers than what was actually
+        # produced and would waste the (slow) codebleu computation again.
+        if [ -f "${SCORES_PATH}" ]; then
+            ARM_JSON=$(cat "${SCORES_PATH}")
+        else
+            echo "No cached ${SCORES_PATH}; scoring now (fixing PYTHONHASHSEED for reproducibility)..." >&2
+            ARM_JSON=$(cd "${CODEGUARDER_DIR}" && PYTHONHASHSEED=0 uv run --python 3.10 python src/sec_eval.py --result_path "${RESPONSE_PATH}" | tail -1)
+            echo "${ARM_JSON}" > "${SCORES_PATH}"
+        fi
         echo "{\"scenario\": \"${scenario}\", \"arm\": \"${arm}\", \"result\": ${ARM_JSON}}" >> "${RESULTS_JSON}"
     done
 done

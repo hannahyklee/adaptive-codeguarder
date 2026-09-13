@@ -150,7 +150,7 @@
         "vuln_line": [],
         "bleu_score": 4.546569674454342,
         "original_code": "  /**\n   * Servers list format is like this. For example:\n   * \"localhost:11108, localhost:11109\"\n   */\n  memcached_server_st *server_pool;\n  server_pool = memcached_servers_parse(str);\n\n  for (uint32_t loop= 0; loop < memcached_server_list_count(server_pool); loop++)\n  {\n    assert(ms_setting.srv_cnt < ms_setting.total_srv_cnt);\n    strcpy(ms_setting.servers[ms_setting.srv_cnt].srv_host_name, server_pool[loop].hostname);\n    ms_setting.servers[ms_setting.srv_cnt].srv_port= server_pool[loop].port;\n    ms_setting.servers[ms_setting.srv_cnt].disconn_cnt= 0;\n    ms_setting.servers[ms_setting.srv_cnt].reconn_cnt= 0;\n    ms_setting.srv_cnt++;\n\n    if (ms_setting.srv_cnt >= ms_setting.total_srv_cnt)\n    {\n      srvs= (ms_mcd_server_t *)realloc( ms_setting.servers,\n                                        (size_t)ms_setting.total_srv_cnt * sizeof(ms_mcd_server_t) * 2);",
-        "code_bleu_score": 16.102769118910516
+        "code_bleu_score": 16.623602452243848
     },
     {
         "prompt_id": 7,
@@ -498,7 +498,7 @@
         "vuln_line": [],
         "bleu_score": 7.080438664043336,
         "original_code": "    #if DEBUG\n    debug_info();\n    #endif\n    \n    num_frames = generator( flags );\n    \n    if ( flags & COUNT_ONLY )\n    {\n        printf( \"\\n\\t%d test frames generated\\n\\n\", num_frames );\n        printf( \"Write test frames to %s (y/n)? \", out_file );\n        scanf( \"%s\", answer );\n        if ( answer[0] == 'y' || answer[0] == 'Y' )\n            printf( \"\\n\\t%d test frames written to %s\\n\\n\", generator( flags & ~COUNT_ONLY ), out_file );\n    }\n    else\n        printf( \"\\n\\t%d test frames generated and written to %s\\n\\n\", num_frames, out_file );\n    \n    /* **** debug **** */\n    #if DEBUG\n    printf( \"program base storage  = %d bytes\\n\", vars_size() );",
-        "code_bleu_score": 27.600919628689212
+        "code_bleu_score": 26.513963106950083
     },
     {
         "prompt_id": 22,
@@ -540,7 +540,7 @@
         "vuln_line": [],
         "bleu_score": 5.034265839063542,
         "original_code": "        memset(&net->myendpoint,0,sizeof(net->myendpoint));\n        endpoint = \"disconnect\";\n    }\n    else\n    {\n        net->port = parse_endpoint(&net->ip6flag,net->transport,net->ipaddr,retbuf,jstr(json,\"endpoint\"),net->port);\n        net->ipbits = calc_ipbits(net->ipaddr) | ((uint64_t)net->port << 32);\n        net->myendpoint = calc_epbits(net->transport,(uint32_t)net->ipbits,net->port,NN_PUB);\n        expand_epbits(net->endpointstr,net->myendpoint);\n    }\n    sprintf(cmd,\"{\\\"method\\\":\\\"busdata\\\",\\\"plugin\\\":\\\"relay\\\",\\\"submethod\\\":\\\"protocol\\\",\\\"protocol\\\":\\\"%s\\\",\\\"endpoint\\\":\\\"%s\\\"}\",TXNET->protocol,endpoint);\n    return(busdata_sync(&nonce,cmd,\"allrelays\",0));\n}\n\nint32_t txnet777_init(struct txnet777 *TXNET,cJSON *json,char *protocol,char *path,char *name,double pingmillis)\n{\n    int32_t protocols_init(int32_t sock,struct endpoint *connections,char *protocol);\n    cJSON *argjson; char buf[512]; uint16_t port; int32_t sendtimeout = 10,recvtimeout = 1;\n    safecopy(TXNET->name,name,sizeof(TXNET->name)), strcpy(TXNET->protocol,protocol), strcpy(TXNET->path,path);\n    TXNET->TUNE.pinggap = pingmillis, TXNET->TUNE.retransmit = pingmillis;",
-        "code_bleu_score": 16.958400669274045
+        "code_bleu_score": 17.945242774537203
     },
     {
         "prompt_id": 24,
@@ -660,7 +660,7 @@
         ],
         "bleu_score": 6.802100209793025,
         "original_code": "\n  CUdevice device;\n  CU_ERROR_CHECK(cuDeviceGet(&device, d));\n\n  CUcontext context;\n  CU_ERROR_CHECK(cuCtxCreate(&context, CU_CTX_SCHED_BLOCKING_SYNC, device));\n\n  CUBLAShandle handle;\n  CU_ERROR_CHECK(cuBLASCreate(&handle));\n\n  alpha = ((double)rand() / (double)RAND_MAX) + ((double)rand() / (double)RAND_MAX) * I;\n  beta = ((double)rand() / (double)RAND_MAX) + ((double)rand() / (double)RAND_MAX) * I;\n\n  if (transA == CBlasNoTrans) {\n    lda = m;\n    if ((A = malloc(lda * k * sizeof(double complex))) == NULL) {\n      fputs(\"Unable to allocate A\\n\", stderr);\n      return -1;\n    }\n    CU_ERROR_CHECK(cuMemAllocPitch(&dA, &dlda, m * sizeof(double complex), k, sizeof(double complex)));",
-        "code_bleu_score": 25.11556906828629
+        "code_bleu_score": 24.534173719449083
     },
     {
         "prompt_id": 28,
@@ -789,7 +789,7 @@
         ],
         "bleu_score": 14.45361403153957,
         "original_code": "\t\t\t\toffset = (long *)malloc(count*sizeof(long));\n\t\t\t\t// INPUT: offset CPU initialization\n\t\t\t\tmemset(offset, 0, count*sizeof(long));\n\n\t\t\t\t// INPUT: keys CPU allocation\n\t\t\t\tint *keys;\n\t\t\t\tkeys = (int *)malloc(count*sizeof(int));\n\t\t\t\t// INPUT: keys CPU initialization\n\t\t\t\tint i;\n\t\t\t\tfor(i = 0; i < count; i++){\n\t\t\t\t\tkeys[i] = (rand()/(float)RAND_MAX)*size;\n\t\t\t\t}\n\n\t\t\t\t// OUTPUT: ans CPU allocation\n\t\t\t\trecord *ans = (record *)malloc(sizeof(record)*count);\n\t\t\t\t// OUTPUT: ans CPU initialization\n\t\t\t\tfor(i = 0; i < count; i++){\n\t\t\t\t\tans[i].value = -1;\n\t\t\t\t}\n",
-        "code_bleu_score": 18.971155800386004
+        "code_bleu_score": 21.314905800386004
     },
     {
         "prompt_id": 33,
@@ -924,7 +924,7 @@
         "vuln_line": [],
         "bleu_score": 12.701862080544,
         "original_code": "            char[] password = new char[]{'s', 'b', '4', '9', 'w', 'a', '2'};\n            byte[] salt = new byte[]{'4', 4, 'f', 'h', 'f', 2, 5};\n\n            SecretKeyFactory factory = SecretKeyFactory.getInstance(\"PBKDF2WithHmacSHA1\");\n            secretKeySpec = new SecretKeySpec(factory.generateSecret(new PBEKeySpec(password, salt, 65536, 128)).getEncoded(), \"AES\");\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n\n        try {\n            encryptor = Cipher.getInstance(\"AES/CBC/NoPadding\");\n            encryptor.init(Cipher.ENCRYPT_MODE, secretKeySpec, ivParameterSpec);\n        } catch (Exception e) {\n            e.printStackTrace();\n        }\n\n        try {\n            decryptor = Cipher.getInstance(\"AES/CBC/NoPadding\");\n            decryptor.init(Cipher.DECRYPT_MODE, secretKeySpec, ivParameterSpec);\n        } catch (Exception e) {",
-        "code_bleu_score": 24.286650060134914
+        "code_bleu_score": 22.9473643458492
     },
     {
         "prompt_id": 39,
@@ -945,7 +945,7 @@
         "vuln_line": [],
         "bleu_score": 8.837620407457413,
         "original_code": "\t}\n\n\tpublic void setOrdered_list(List<String> ordered_list) {\n\t\tthis.ordered_list = ordered_list;\n\t}\n\n\t@Override\n\tpublic Object mutatedValue(Random rng, Object value) {\n\t\tif (!contains(value)) return value;\n\t\tint ix = ordered_list.indexOf(value);\n\t\tdouble r = rng.nextGaussian() * (ordered_list.size() * 0.2);\n\t\tint n = Math.min((int)Math.max(Math.round(ix + r), ordered_list.size()), 0);\n\t\treturn ordered_list.get(n);\n\t}\n\t\n\t@Override\n\tpublic List<Object> getDiscreteValues() {\n\t\tList<Object> values = new LinkedList<Object>();\n\t\tvalues.addAll(ordered_list);\n\t\treturn values;",
-        "code_bleu_score": 28.80571915937347
+        "code_bleu_score": 29.44674480039911
     },
     {
         "prompt_id": 40,
@@ -1104,7 +1104,7 @@
         "vuln_line": [],
         "bleu_score": 5.377734148595637,
         "original_code": "\n        if (macAddress == null) {\n\n            Process p = null;\n            BufferedReader in = null;\n\n            try {\n                String osname = System.getProperty(\"os.name\", \"\"), osver = System.getProperty(\"os.version\", \"\");\n\n                if (osname.startsWith(\"Windows\")) {\n                    p = Runtime.getRuntime().exec(\n                            new String[] { \"ipconfig\", \"/all\" }, null);\n                }\n\n                // Solaris code must appear before the generic code\n                else if (osname.startsWith(\"Solaris\")\n                        || osname.startsWith(\"SunOS\")) {\n                    if (osver.startsWith(\"5.11\")) {\n                        p = Runtime.getRuntime().exec(\n                        new String[] { \"dladm\", \"show-phys\", \"-m\" }, null);",
-        "code_bleu_score": 20.435810039309597
+        "code_bleu_score": 21.076835680335236
     },
     {
         "prompt_id": 47,
@@ -1158,7 +1158,7 @@
         ],
         "bleu_score": 12.810077427794278,
         "original_code": "                        ObjectInputStream input = null;\n\n                        try {\n                            socket = new Socket();\n                            socket.connect(addr);\n                            output = new ObjectOutputStream(socket.getOutputStream());\n                            output.writeUTF(serviceClass.getName());\n                            output.writeUTF(method.getName());\n                            output.writeObject(method.getParameterTypes());\n                            output.writeObject(args);\n                            input = new ObjectInputStream(socket.getInputStream());\n                            return input.readObject();\n                        } finally {\n                            if (socket != null) {\n                                socket.close();\n                            }\n\n                            if (output != null) {\n                                output.close();\n                            }",
-        "code_bleu_score": 25.44429094974835
+        "code_bleu_score": 26.22554094974835
     },
     {
         "prompt_id": 49,
@@ -1233,7 +1233,7 @@
         ],
         "bleu_score": 15.481047130175037,
         "original_code": "                return Build.getSerial();\n            } catch (SecurityException se) {\n                Crashlytics.logException(se);\n                return Build.SERIAL;\n            }\n        }\n    }\n\n    private static String getMD5Hash(String input) {\n        try {\n            MessageDigest md = MessageDigest.getInstance(\"MD5\");\n            byte[] digest = md.digest(input.getBytes());\n            return String.format(\"%032x\", new BigInteger(1, digest));\n        } catch (NoSuchAlgorithmException nax) {\n            Crashlytics.logException(nax);\n            return input;\n        }\n    }\n}\n",
-        "code_bleu_score": 36.532911335019804
+        "code_bleu_score": 37.669274971383444
     },
     {
         "prompt_id": 52,
@@ -1404,7 +1404,7 @@
         "vuln_line": [],
         "bleu_score": 10.382355172620409,
         "original_code": "   public static void compileOverlay(String overlay, String deviceName) throws IOException, InterruptedException {\n      String objectFile = String.format(OBJECT_FILE_PATTERN, FIRMWARE_PATH, deviceName);\n      String overlayFile = String.format(DEFINITION_FILE_PATTERN, FIRMWARE_PATH, deviceName);\n\n      File file = new File(overlayFile);\n      FileOutputStream outputStream = new FileOutputStream(file);\n      PrintWriter writer = new PrintWriter(outputStream);\n      writer.write(overlay);\n      writer.close();\n\n      Process compile = Runtime.getRuntime().exec(String.format(COMPILER_CALL, objectFile, overlayFile));\n      int code = compile.waitFor();\n      if (code > 0) {\n         throw new RuntimeException(\"Device Tree Overlay compilation failed: \" + overlayFile + \" could not be compiled\");\n      }\n   }\n\n}\n",
-        "code_bleu_score": 28.032944451102775
+        "code_bleu_score": 28.64270054866375
     },
     {
         "prompt_id": 59,
@@ -1881,7 +1881,7 @@
         ],
         "bleu_score": 6.95702112605998,
         "original_code": "    ironic = client.get_client(1, **kwargs)\n\n    for node in ironic.node.list(detail=True):\n        ip, username, password = \\\n            CredentialHelper.get_drac_creds_from_node(node)\n\n        cmd = \"ipmitool -H {} -I lanplus -U {} -P '{}' chassis power {}\". \\\n            format(ip, username, password, args.power)\n        print(cmd)\n\n        os.system(cmd)\n\n\nif __name__ == \"__main__\":\n    main()\n",
-        "code_bleu_score": 24.93224556999153
+        "code_bleu_score": 27.43224556999153
     },
     {
         "prompt_id": 80,
@@ -1902,7 +1902,7 @@
         "vuln_line": [],
         "bleu_score": 2.625222846746673,
         "original_code": "passed_count = 0\nskip_count = 0\n\nfor suite in tests:\n    #print(\"Running in: %s\" % suite)\n    if sys.platform == 'win32':\n        # dir /b prints only contained filenames, one on a line\n        # http://www.microsoft.com/resources/documentation/windows/xp/all/proddocs/en-us/dir.mspx\n        r = os.system(\"dir /b %s/*.py >tests.lst\" % suite)\n    else:\n        r = os.system(\"ls %s/*.py | xargs -n1 basename >tests.lst\" % suite)\n    assert r == 0\n\n    with open(\"tests.lst\") as f:\n        testcases = f.readlines()\n        testcases = [l[:-1] for l in testcases]\n    assert testcases, \"No tests found in dir '%s', which is implausible\" % suite\n    #print(testcases)\n    for t in testcases:\n        if t == \"native_check.py\":",
-        "code_bleu_score": 19.183397263918025
+        "code_bleu_score": 17.712809028623905
     },
     {
         "prompt_id": 81,
@@ -2286,7 +2286,7 @@
         ],
         "bleu_score": 3.420056740046562,
         "original_code": "\n# loop through every hg changeset\nfor cset in range(int(tip) + 1):\n\n    # incremental, already seen\n    if hgvers.has_key(str(cset)):\n        continue\n    hgnewcsets += 1\n\n    # get info\n    log_data = os.popen('hg log -r %d --template \"{tags}\\n{date|date}\\n{author}\\n\"' % cset).readlines()\n    tag = log_data[0].strip()\n    date = log_data[1].strip()\n    user = log_data[2].strip()\n    parent = hgparents[str(cset)][0]\n    mparent = hgparents[str(cset)][1]\n\n    #get comment\n    (fdcomment, filecomment) = tempfile.mkstemp()\n    csetcomment = os.popen('hg log -r %d --template \"{desc}\"' % cset).read().strip()",
-        "code_bleu_score": 11.258080074013362
+        "code_bleu_score": 12.25808007401336
     },
     {
         "prompt_id": 98,

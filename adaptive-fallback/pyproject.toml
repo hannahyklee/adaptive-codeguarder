@@ -4,17 +4,10 @@ version = "0.1.0"
 description = "Adaptive-fallback experiment on top of CodeGuarder (CCS'25): drop a retrieved example when an LLM judge flags it as unsafe relative to the retrieved security knowledge, instead of always keeping it alongside advisory text."
 requires-python = ">=3.10,<3.11"
 dependencies = [
+    "matplotlib",
     "openai==1.58.1",
     "tqdm",
 ]
 
 # This project's own code (src/adaptive_judge.py, src/defense_adaptive.py,
-# scripts/sample_toy_dataset.py) only ever calls an OpenAI-compatible chat
-# endpoint (openai) and shows a progress bar (tqdm) -- everything else is
-# stdlib. It used to also depend on faiss-cpu/transformers/torch/langchain*
-# to re-run CodeGuarder's FAISS retrieval independently, but defense_adaptive.py
-# now parses security knowledge directly out of the already-shipped Def
-# prompt instead (see that file's module docstring for why), so those heavy
-# ML deps are no longer needed here at all. They still live in
-# ../CodeGuarder/pyproject.toml, which is invoked separately (in its own
-# environment) for the actual code-generation and security-evaluation steps.
+# scripts/sample_toy_dataset.py) 
