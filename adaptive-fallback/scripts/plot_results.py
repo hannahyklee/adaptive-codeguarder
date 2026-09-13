@@ -19,6 +19,7 @@ Usage (from this project's root, after `uv sync`):
 import argparse
 import json
 import os
+import statistics
 import subprocess
 import sys
 from collections import defaultdict
@@ -83,6 +84,54 @@ def collect_sr_codebleu(model: str):
     return data
 
 
+def collect_codebleu_stdev(model: str, scenarios_present):
+    """Returns {scenario: {arm: {language: stdev}}} of the per-item
+    code_bleu_score values, read from the *_filled.json companion file
+    sec_eval.py always writes (the aggregate sec_eval() returns is only the
+    per-language mean -- this recovers the spread behind that mean, e.g. to
+    plot as error bars). Items missing a code_bleu_score (codebleu raised
+    internally, rare) are skipped rather than treated as 0.
+    """
+    data = defaultdict(dict)
+    for scenario in scenarios_present:
+        for arm in ARMS:
+            filled_path = PROJECT_ROOT / "results" / f"toy_{scenario}_{arm}_{model}_filled.json"
+            if not filled_path.exists():
+                continue
+            items = json.loads(filled_path.read_text())
+            by_lang = defaultdict(list)
+            for item in items:
+                score = item.get("code_bleu_score")
+                if score is not None:
+                    by_lang[item["language"]].append(score)
+            data[scenario][arm] = {
+                lang: statistics.stdev(scores) if len(scores) > 1 else 0.0
+                for lang, scores in by_lang.items()
+            }
+    return data
+
+
+def collect_sr_wilson_errors(sr_data):
+    """Returns {scenario: {arm: {language: (lower_gap, upper_gap)}}} -- the
+    distance from pass_rate down to the Wilson lower bound and up to the
+    Wilson upper bound, in percentage points, ready to use as asymmetric
+    matplotlib yerr.
+    """
+    data = defaultdict(dict)
+    for scenario, arms in sr_data.items():
+        for arm, langs in arms.items():
+            by_lang = {}
+            for lang, stats in langs.items():
+                total = stats.get("total_count", 0)
+                vulnerable = stats.get("vulnerable_suggestion_count", 0)
+                successes = total - vulnerable
+                lower, upper = wilson_interval(successes, total)
+                pass_rate = stats.get("pass_rate", 0.0)
+                by_lang[lang] = (max(0.0, pass_rate - lower * 100), max(0.0, upper * 100 - pass_rate))
+            data[scenario][arm] = by_lang
+    return data
+
+
 def collect_judge_fallback_rates(scenarios_present):
     """Returns {scenario: {language: {"instances":n, "fell_back":n}}} by
     reading the adaptive prompt-construction output directly (no subprocess
@@ -112,7 +161,30 @@ def all_languages(sr_data):
     return sorted(langs)
 
 
-def plot_metric_by_scenario(sr_data, metric_key, ylabel, title, out_path):
+def wilson_interval(successes: int, n: int, z: float = 1.96):
+    """95% Wilson score interval for a binomial proportion, returned as
+    (lower, upper) fractions in [0, 1]. The right choice for a rate like SR
+    (each instance is a secure/insecure Bernoulli trial) -- unlike a raw
+    stdev of the 0/1 outcomes (which is ~fixed by p(1-p) and barely differs
+    across arms), this actually shrinks with sample size and widens near
+    p=0 or p=1, so it reflects how much a given SR estimate could plausibly
+    move with more instances.
+    """
+    if n == 0:
+        return (0.0, 0.0)
+    phat = successes / n
+    denom = 1 + z * z / n
+    center = (phat + z * z / (2 * n)) / denom
+    margin = z * ((phat * (1 - phat) / n + z * z / (4 * n * n)) ** 0.5) / denom
+    return (max(0.0, center - margin), min(1.0, center + margin))
+
+
+def plot_metric_by_scenario(sr_data, metric_key, ylabel, title, out_path, err_data=None, err_label=""):
+    """err_data, if given: {scenario: {arm: {language: stdev_or_(lower,upper)}}}.
+    Each entry can be a single number (symmetric error bar) or a (lower_gap,
+    upper_gap) tuple (asymmetric, e.g. from a Wilson interval) -- both are
+    normalized into matplotlib's expected yerr shape.
+    """
     scenarios_present = [s for s in SCENARIOS if s in sr_data]
     if not scenarios_present:
         print(f"No data to plot for {title}; skipping.", file=sys.stderr)
@@ -129,7 +201,17 @@ def plot_metric_by_scenario(sr_data, metric_key, ylabel, title, out_path):
             arm_data = sr_data[scenario].get(arm, {})
             values = [arm_data.get(lang, {}).get(metric_key, float("nan")) for lang in langs]
             offsets = [xi + (i - 1) * width for xi in x]
-            ax.bar(offsets, values, width=width, label=ARM_LABELS[arm], color=ARM_COLORS[arm])
+            yerr = None
+            if err_data is not None:
+                raw = [err_data.get(scenario, {}).get(arm, {}).get(lang, 0.0) for lang in langs]
+                if raw and isinstance(raw[0], tuple):
+                    yerr = [[e[0] for e in raw], [e[1] for e in raw]]
+                else:
+                    yerr = raw
+            ax.bar(
+                offsets, values, width=width, label=ARM_LABELS[arm], color=ARM_COLORS[arm],
+                yerr=yerr, capsize=3, ecolor="black", error_kw={"alpha": 0.6, "linewidth": 1},
+            )
         ax.set_xticks(list(x))
         ax.set_xticklabels(langs)
         ax.set_title(scenario)
@@ -137,7 +219,7 @@ def plot_metric_by_scenario(sr_data, metric_key, ylabel, title, out_path):
         ax.grid(axis="y", alpha=0.3)
 
     axes[0].legend()
-    fig.suptitle(title)
+    fig.suptitle(title + (f"  ({err_label})" if err_label else ""))
     fig.tight_layout()
     fig.savefig(out_path, dpi=150)
     plt.close(fig)
@@ -193,6 +275,12 @@ def main():
 
     fallback_data = collect_judge_fallback_rates(list(sr_data.keys()))
 
+    # Error bars (Wilson interval for SR, stdev for CodeBLEU) are implemented
+    # above (collect_sr_wilson_errors, collect_codebleu_stdev) but left off
+    # by default for now, while this is still a toy-scale (~25-40
+    # instances/language) sample -- pass err_data=... / err_label=... back in
+    # to plot_metric_by_scenario below once instance counts are large enough
+    # that the bars are worth showing.
     plot_metric_by_scenario(sr_data, "pass_rate", "Security Rate (%)", f"Security Rate by arm and language ({args.model})", out_dir / "sr_by_arm_language.png")
     plot_metric_by_scenario(sr_data, "code_bleu", "CodeBLEU", f"CodeBLEU by arm and language ({args.model})", out_dir / "codebleu_by_arm_language.png")
     plot_fallback_rates(fallback_data, out_dir / "judge_fallback_rate.png")
