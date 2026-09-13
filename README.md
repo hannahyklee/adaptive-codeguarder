@@ -1,23 +1,13 @@
 # adaptive-codeguarder
 
-- [`CodeGuarder/`](CodeGuarder) — a vendored copy of the CCS'25 artifact for
-  ["Give LLMs a Security Course: Securing Retrieval-Augmented Code
-  Generation via Knowledge Injection"](https://doi.org/10.1145/3719027.3765049)
-  (Lin, Wang, Qin, Chen, and Mao). Trimmed of unused bulk (see
-  `CodeGuarder/CybersecurityBenchmarks/VENDORED.md`) and given an
-  alternative `uv`-based environment (`CodeGuarder/pyproject.toml`, so
-  installing conda is never required) but otherwise unmodified — same
-  scripts, same behavior, same package versions as the original artifact
-  (data and code originally published at
-  https://zenodo.org/records/16957113). Its original conda-based
-  `environment.yml`/`scripts/init_env.sh` are left in place for anyone who
-  wants to reproduce it exactly as published.
-- [`adaptive-fallback/`](adaptive-fallback) — a new experiment built on top
-  of it, asking whether dropping a retrieved code example when an LLM judge
-  flags it as unsafe (instead of CodeGuarder's always-keep-the-example
-  behavior) recovers more of the security-rate ceiling under CodeGuarder's
-  own poisoning attacks. See its own README for what it does and how to run
-  it.
+This repository includes code to test a modification to `CodeGuarder` from ["Give LLMs a Security Course: Securing Retrieval-Augmented Code
+  Generation via Knowledge Injection"](https://doi.org/10.1145/3719027.3765049). The original repository provided by the authors is included under `CodeGuarder/` and has been trimmed of unused bulk, and has been modified to use `uv` rather than `conda`. Data and code were originally published at https://zenodo.org/records/16957113. 
+
+The modification includes a new `adaptive fallback` option, which uses a lightweight LLM as a judge to filter contradictory examples during prompt generation. New code is under `adaptive-fallback/`.
+
+## Running Experiments
+
+See the `README.md` under `adaptive-fallback/` for reproduction instructions.
 
 ## License
 
