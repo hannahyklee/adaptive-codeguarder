@@ -20,7 +20,7 @@ PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
 CODEGUARDER_DIR="$(cd "${PROJECT_ROOT}/../CodeGuarder" && pwd)"
 
 command_exists () { command -v "$1" >/dev/null 2>&1; }
-for cmd in jq conda; do
+for cmd in jq uv; do
     if ! command_exists "$cmd"; then
         echo "'${cmd}' is not found; it's required to run this script."
         exit 1
@@ -49,7 +49,7 @@ for scenario in ${SCENARIOS}; do
             echo "Run scripts/run_${scenario}_adaptive.sh ${MODEL_NAME} <MODEL_KEY> <BASE_URL> first."
             exit 1
         fi
-        ARM_JSON=$(cd "${CODEGUARDER_DIR}" && conda run --no-capture-output -n CodeGuarder python src/sec_eval.py --result_path "${RESPONSE_PATH}" | tail -1)
+        ARM_JSON=$(cd "${CODEGUARDER_DIR}" && uv run --python 3.10 python src/sec_eval.py --result_path "${RESPONSE_PATH}" | tail -1)
         echo "{\"scenario\": \"${scenario}\", \"arm\": \"${arm}\", \"result\": ${ARM_JSON}}" >> "${RESULTS_JSON}"
     done
 done

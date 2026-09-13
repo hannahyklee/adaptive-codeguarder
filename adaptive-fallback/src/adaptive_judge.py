@@ -21,7 +21,7 @@ from typing import List
 
 from openai import OpenAI
 
-from configs import models_config
+from judge_config import models_config
 
 CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "judge"
 

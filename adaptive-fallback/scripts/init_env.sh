@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Sets up this project's own environment (separate from ../CodeGuarder's
-# conda environment). Pins the same Python version as CodeGuarder for
+# own uv environment). Pins the same Python version as CodeGuarder for
 # compatibility with its reused torch/transformers/faiss versions.
 PYTHON_VERSION="3.10"
 
@@ -37,8 +37,9 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Environment setup complete!"
+echo ""
 echo "Run this project's scripts with: uv run python <script>.py"
 echo ""
-echo "Note: ../CodeGuarder still needs its own conda environment set up"
-echo "separately (see ../CodeGuarder/scripts/init_env.sh) -- scripts/run_*_adaptive.sh"
-echo "invoke both environments."
+echo "Note: ../CodeGuarder still needs its own (separate) uv environment set up:"
+echo "  cd ../CodeGuarder && uv sync --python 3.10"
+echo "scripts/run_*_adaptive.sh invoke both environments."

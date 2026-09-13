@@ -5,7 +5,9 @@
 # results/toy_standard_{ori,def,adaptive}_<MODEL_NAME>.json.
 #
 # Usage: run_standard_adaptive.sh <MODEL_NAME> <MODEL_KEY> <BASE_URL>
-# Optional env var: JUDGE_MODEL (default: judge-local, from src/judge_config.py)
+# Optional env vars:
+#   JUDGE_MODEL (default: judge-local, from src/judge_config.py)
+#   DATASET_DIR (default: ./dataset/toy; e.g. ./dataset/test_5 for a quick smoke test)
 set -e
 
 SCENARIO="standard"
@@ -14,7 +16,7 @@ PROJECT_ROOT="$(dirname "${SCRIPT_DIR}")"
 CODEGUARDER_DIR="$(cd "${PROJECT_ROOT}/../CodeGuarder" && pwd)"
 
 command_exists () { command -v "$1" >/dev/null 2>&1; }
-for cmd in jq uv conda; do
+for cmd in jq uv; do
     if ! command_exists "$cmd"; then
         echo "'${cmd}' is not found; it's required to run this script."
         exit 1
@@ -30,7 +32,7 @@ MODEL_KEY="$2"
 BASE_URL="$3"
 JUDGE_MODEL="${JUDGE_MODEL:-judge-local}"
 
-DATASET_DIR="${PROJECT_ROOT}/dataset/toy"
+DATASET_DIR="${DATASET_DIR:-${PROJECT_ROOT}/dataset/toy}"
 RESULTS_DIR="${PROJECT_ROOT}/results"
 mkdir -p "${RESULTS_DIR}"
 
@@ -39,12 +41,13 @@ echo "--- Step 1: Building adaptive-fallback prompts (this project's uv env) ---
     cd "${PROJECT_ROOT}"
     uv run python src/defense_adaptive.py \
         --scenario "${SCENARIO}" \
+        --dataset_dir "${DATASET_DIR}" \
         --judge_model "${JUDGE_MODEL}" \
         --output_path "${DATASET_DIR}/${SCENARIO}_adaptive.json"
 )
 
 echo ""
-echo "--- Step 2: Querying + scoring all three arms (CodeGuarder's conda env) ---"
+echo "--- Step 2: Querying + scoring all three arms (CodeGuarder's uv env) ---"
 
 TEMP_FILE=$(mktemp)
 for arm in ori def adaptive; do

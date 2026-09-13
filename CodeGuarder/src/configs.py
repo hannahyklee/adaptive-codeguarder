@@ -10,16 +10,13 @@ models_config = {
         "base_url": "",
         "key": "",
     },
-    
-    "ds-coder": {
+
+    "qwen-local": {
         "base_url": "http://localhost:11434/v1",
-        "key": "",
+        "key": "ollama",
+        "model_name": "qwen2.5-coder:7b",
     },
-    "c13b": {
-        "base_url": "http://localhost:11434/v1",
-        "key": "",
-    },
-    
+
 
 }
 

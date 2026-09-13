@@ -44,8 +44,8 @@ This directory never modifies `../CodeGuarder` — it reuses it. Concretely:
 - **`scripts/run_{standard,poisoning_i,poisoning_ii}_adaptive.sh`** build
   the adaptive prompts (this project's own `uv` environment), then query the
   model under test and score it with CodeGuarder's own CyberSecEval harness
-  and insecure-code detector (`../CodeGuarder`'s conda environment) for all
-  three arms — Ori, Def, Adaptive.
+  and insecure-code detector (`../CodeGuarder`'s own separate `uv`
+  environment) for all three arms — Ori, Def, Adaptive.
 - **`scripts/RQ_Adaptive.sh`** prints average SR per scenario/arm and a
   **recovery %**: how much of the Standard scenario's Def−Ori gap each arm
   (Def, Adaptive) recovers under each poisoning scenario. That number is the
@@ -53,13 +53,20 @@ This directory never modifies `../CodeGuarder` — it reuses it. Concretely:
 
 ## Setup
 
-Two separate environments are involved:
+Two separate `uv` environments are involved (no conda needed):
 
-1. `../CodeGuarder` needs its own conda environment (see
-   [`../CodeGuarder/Readme.md`](../CodeGuarder/Readme.md) /
-   `../CodeGuarder/scripts/init_env.sh`) — unchanged from the original
-   artifact.
-2. This project needs its own `uv` environment:
+1. `../CodeGuarder` needs its own environment:
+   ```bash
+   cd ../CodeGuarder && uv sync --python 3.10
+   ```
+   This uses `CodeGuarder/pyproject.toml`, a non-conda alternative to the
+   original artifact's `environment.yml` (added so this whole project never
+   requires installing conda) — same pinned package versions, minus a
+   handful of Linux+CUDA-only packages (`nvidia-*`, `triton`) that aren't
+   needed off Linux/GPU machines. The original artifact's own
+   `environment.yml`/`scripts/init_env.sh` (conda-based) are left in place
+   too, if you'd rather reproduce it exactly that way.
+2. This project needs its own environment:
    ```bash
    ./scripts/init_env.sh
    ```

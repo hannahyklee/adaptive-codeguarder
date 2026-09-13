@@ -10,10 +10,8 @@ __pycache__/
 *.pyc
 .venv/
 
-# uv
-adaptive-fallback/.venv/
-
-# conda (CodeGuarder's env lives outside the repo, managed by conda itself)
+# uv (both CodeGuarder/ and adaptive-fallback/ each have their own .venv,
+# already covered by the general .venv/ rule above)
 
 # OS
 .DS_Store

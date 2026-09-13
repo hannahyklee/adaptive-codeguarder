@@ -14,6 +14,6 @@ models_config = {
     "judge-local": {
         "base_url": "http://localhost:11434/v1",
         "key": "ollama",
-        "model_name": "",  # TODO: fill in, e.g. "codellama:13b" or "deepseek-coder-v2:16b"
+        "model_name": "qwen2.5-coder:7b",
     },
 }

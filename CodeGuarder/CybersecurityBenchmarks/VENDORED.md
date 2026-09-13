@@ -22,13 +22,6 @@ path, which takes its prompts from `--prompt-path` and writes to
   provenance. If you need the full upstream history, clone
   [meta-llama/PurpleLlama](https://github.com/meta-llama/PurpleLlama)
   directly.
-- `website/` — the project's Docusaurus documentation site.
-- `datasets/` — CyberSecEval's own seed datasets for every benchmark
-  variant (autocomplete, autonomous_uplift, canary_exploit, frr, interpreter,
-  mitre, prompt_injection, spear_phishing, `third-party.txt`). This repo
-  supplies its own prompts (see `../dataset/`), so none of this was needed.
-- `scripts/` — upstream's own lint/test runner scripts.
-- `__pycache__/` — build artifacts.
 
 Everything under `benchmark/` is kept unmodified (including benchmark
 variants this repo doesn't call, such as `mitre_benchmark.py`) since
